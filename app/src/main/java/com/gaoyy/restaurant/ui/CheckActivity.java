@@ -217,6 +217,7 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         {
             case R.id.item_check_layout:
                 showToast(position+"");
+                redirect(MapsActivity.class);
                 break;
         }
     }
