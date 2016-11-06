@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Restaurant</string>
+
+    <string name="username_hint">username</string>
+    <string name="password_hint">password</string>
+    <string name="login">LOGIN</string>
+    <string name="welcome">Welcome</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="action_example">Example action</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="delivery">派送</string>
+    <string name="check">查看</string>
+    <string name="check_order_list">订单列表</string>
+    <string name="submit">提交</string>
+    <string name="customer_phone">客户电话</string>
+    <string name="customer_address">客户地址</string>
+    <string name="price">价格</string>
+    <string name="remark">备注</string>
+</resources>

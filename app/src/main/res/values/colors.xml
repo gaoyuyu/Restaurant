@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#009688</color>
+    <color name="transparent">#00000000</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <color name="gray600">#999999</color>
+    <color name="gray_divider">#EEEEEE</color>
+    <color name="gray_light">#e3e3e3</color>
+    <color name="text_basic_color">#333333</color>
+    <color name="btn_highlight_color">#22000000</color>
+</resources>

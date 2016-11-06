@@ -1,0 +1,8 @@
+<resources>
+
+    <style name="AppTheme" parent="@style/BaseAppTheme">
+        <!-- 在5.0+上 共享元素跳转出现闪屏，需将window过渡动画设置为null-->
+        <item name="android:windowEnterTransition">@null</item>
+        <item name="android:windowReturnTransition">@null</item>
+    </style>
+</resources>
