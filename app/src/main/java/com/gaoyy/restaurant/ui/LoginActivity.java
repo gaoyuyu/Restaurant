@@ -12,7 +12,9 @@ import android.widget.Button;
 
 import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.base.BaseActivity;
+import com.gaoyy.restaurant.fragment.CustomDialogFragment;
 import com.gaoyy.restaurant.utils.Constant;
+import com.gaoyy.restaurant.utils.DialogUtils;
 import com.gaoyy.restaurant.utils.GsonUtils;
 import com.gaoyy.restaurant.utils.OkhttpUtils;
 import com.google.gson.Gson;
@@ -126,6 +128,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener
                 Map<String, String> params = new HashMap<>();
                 params.put("username", loginUsername.getText().toString());
                 params.put("password", loginPassword.getText().toString());
+                final CustomDialogFragment loading = DialogUtils.showLoadingDialog(LoginActivity.this);
                 OkhttpUtils.postAsync(LoginActivity.this, Constant.LOGIN_URL, "login", params, new OkhttpUtils.ResultCallback()
                 {
                     @Override
@@ -137,6 +140,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener
                     @Override
                     public void onSuccess(String body)
                     {
+                        loading.dismiss();
                         Log.i(Constant.TAG, body);
                         int code = GsonUtils.getResponseCode(body);
                         if (code == Constant.ERROR)

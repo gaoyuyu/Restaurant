@@ -21,4 +21,13 @@
     <style name="AppTheme" parent="@style/BaseAppTheme">
     </style>
 
+
+    <style name="Main.Button.Theme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorButtonNormal">@color/colorAccent</item><!--正常状态下的颜色  -->
+        <item name="colorControlHighlight">@color/btn_highlight_color</item><!--覆盖色，按下的颜色  -->
+    </style>
+    <style name="Login.Button.Theme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorButtonNormal">@color/colorPrimary</item><!--正常状态下的颜色  -->
+        <item name="colorControlHighlight">@color/btn_highlight_color</item><!--覆盖色，按下的颜色  -->
+    </style>
 </resources>

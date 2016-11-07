@@ -15,28 +15,27 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:orientation="vertical"
+        android:theme="@style/Main.Button.Theme"
         android:padding="10dp">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/main_delivery_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            android:backgroundTint="@color/colorAccent"
             android:text="@string/delivery"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:transitionName="toolbar"
             />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/main_check_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            android:backgroundTint="@color/colorAccent"
             android:text="@string/check"
             android:textColor="@color/white"
             android:textSize="18sp"

@@ -1,9 +1,11 @@
 package com.gaoyy.restaurant.ui;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -11,7 +13,9 @@ import android.view.MenuItem;
 
 import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.base.BaseActivity;
+import com.gaoyy.restaurant.fragment.CustomDialogFragment;
 import com.gaoyy.restaurant.utils.Constant;
+import com.gaoyy.restaurant.utils.DialogUtils;
 import com.gaoyy.restaurant.utils.GsonUtils;
 import com.gaoyy.restaurant.utils.OkhttpUtils;
 
@@ -112,7 +116,31 @@ public class DeliveryActivity extends BaseActivity
                         }
                         else
                         {
-                            showSnackbar(deliveryToolbar, GsonUtils.getResponseInfo(body, "data"));
+                            CustomDialogFragment dialog = DialogUtils.showAlertDialog(DeliveryActivity.this,"提示",GsonUtils.getResponseInfo(body, "data"),
+                                    "继续填写","去查看订单");
+                            dialog.setOnAlertDialogClickListener(new CustomDialogFragment.OnAlertDialogClickListener()
+                            {
+                                @Override
+                                public void onButtonClick(DialogInterface dialog, int which)
+                                {
+                                    switch(which) {
+                                        case AlertDialog.BUTTON_NEGATIVE:
+                                            dialog.dismiss();
+                                            deliveryPhone.setText("");
+                                            deliveryAddress.setText("");
+                                            deliveryPrice.setText("");
+                                            deliveryRemark.setText("");
+                                            deliveryPhone.requestFocus();
+                                            break;
+                                        case AlertDialog.BUTTON_POSITIVE:
+                                            redirectThenKill(CheckActivity.class);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
+                                }
+                            });
                         }
                     }
                 });
