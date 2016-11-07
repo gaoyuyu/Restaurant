@@ -8,10 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.base.BaseActivity;
+import com.gaoyy.restaurant.utils.CommonUtils;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
 {
@@ -21,6 +24,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RelativeLayout mainContent;
     private Button mainDeliveryBtn;
     private Button mainCheckBtn;
+    private View headerView;
+
+    private ImageView headerAvatar;
+    private TextView headerText;
+
+
+
 
 
     @Override
@@ -55,6 +65,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 this, mainDrawerLayout, mainToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mainDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
+        headerView = mainNavView.getHeaderView(0);
+        headerAvatar = (ImageView) headerView.findViewById(R.id.header_avatar);
+        headerText = (TextView) headerView.findViewById(R.id.header_text);
+        headerText.setText("欢迎您，"+ "["+CommonUtils.getUserRole(this)+"]"+CommonUtils.getUserName(this));
 
     }
 
@@ -97,30 +111,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera)
-        {
-            // Handle the camera action
-        }
-        else if (id == R.id.nav_gallery)
-        {
-
-        }
-        else if (id == R.id.nav_slideshow)
-        {
-
-        }
-        else if (id == R.id.nav_manage)
-        {
-
-        }
-        else if (id == R.id.nav_share)
-        {
-
-        }
-        else if (id == R.id.nav_send)
-        {
-
-        }
 
         mainDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
