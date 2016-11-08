@@ -11,6 +11,9 @@ public class Constant
 
     public static final String TAG = "Demo";
 
+    public static final int ADMIN = 999;
+    public static final int DRIVER = 899;
+
     //0-等待，1-接受，2-派送中，3-完成
     public static final String[] status = {"等待", "接受", "派送中", "完成"};
 

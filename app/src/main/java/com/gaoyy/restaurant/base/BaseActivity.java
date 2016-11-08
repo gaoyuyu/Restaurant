@@ -5,6 +5,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
@@ -14,12 +17,30 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.gaoyy.restaurant.R;
+import com.gaoyy.restaurant.fragment.AdminFragment;
+import com.gaoyy.restaurant.fragment.DriverFragment;
 import com.gaoyy.restaurant.utils.CommonUtils;
+import com.gaoyy.restaurant.utils.Constant;
 import com.gaoyy.restaurant.utils.ToolbarHelper;
 
 
 public abstract class BaseActivity extends AppCompatActivity
 {
+
+
+    //记录当前使用的Fragment
+    private Fragment currentFragment;
+
+    public void setCurrentFragment(Fragment currentFragment)
+    {
+        this.currentFragment = currentFragment;
+    }
+
+    public Fragment getCurrentFragment()
+    {
+        return currentFragment;
+    }
+
     //颜色资源
     public int[] colors = {R.color.colorPrimary, R.color.colorPrimaryDark};
 
@@ -44,6 +65,31 @@ public abstract class BaseActivity extends AppCompatActivity
         setListener();
         //加载数据
         loadData();
+        initFragment(savedInstanceState,-1,-1);
+    }
+
+
+    protected void initFragment(Bundle savedInstanceState,int contentLayoutId,int type)
+    {
+        if(contentLayoutId == -1 || type == -1) return;
+
+        if (savedInstanceState == null)
+        {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            Fragment fragment = null;
+            switch (type)
+            {
+                case Constant.ADMIN:
+                    fragment = AdminFragment.newInstance();
+                    break;
+                default:
+                    fragment = DriverFragment.newInstance();
+                    break;
+
+            }
+            ft.replace(contentLayoutId, fragment).commit();
+        }
     }
 
 
@@ -111,7 +157,7 @@ public abstract class BaseActivity extends AppCompatActivity
      *
      * @param clazz
      */
-    protected void redirect(Class<?> clazz)
+    public void redirect(Class<?> clazz)
     {
         Intent intent = new Intent(this, clazz);
         startActivity(intent);
@@ -123,7 +169,7 @@ public abstract class BaseActivity extends AppCompatActivity
      * @param clazz
      * @param bundle
      */
-    protected void redirect(Class<?> clazz, Bundle bundle)
+    public void redirect(Class<?> clazz, Bundle bundle)
     {
         Intent intent = new Intent(this, clazz);
         if (null != bundle)
@@ -139,7 +185,7 @@ public abstract class BaseActivity extends AppCompatActivity
      * @param clazz
      * @param options
      */
-    protected void redirectWithShareViews(Class<?> clazz, ActivityOptionsCompat options)
+    public void redirectWithShareViews(Class<?> clazz, ActivityOptionsCompat options)
     {
         if (options == null) return;
         Intent intent = new Intent(this, clazz);
@@ -151,7 +197,7 @@ public abstract class BaseActivity extends AppCompatActivity
      * @param clazz
      * @param options
      */
-    protected void redirectWithShareViewsThenKill(Class<?> clazz, ActivityOptionsCompat options)
+    public void redirectWithShareViewsThenKill(Class<?> clazz, ActivityOptionsCompat options)
     {
         if (options == null) return;
         Intent intent = new Intent(this, clazz);
@@ -164,7 +210,7 @@ public abstract class BaseActivity extends AppCompatActivity
      *
      * @param clazz
      */
-    protected void redirectThenKill(Class<?> clazz)
+    public void redirectThenKill(Class<?> clazz)
     {
         Intent intent = new Intent(this, clazz);
         startActivity(intent);
@@ -177,7 +223,7 @@ public abstract class BaseActivity extends AppCompatActivity
      * @param clazz
      * @param bundle
      */
-    protected void redirectThenKill(Class<?> clazz, Bundle bundle)
+    public void redirectThenKill(Class<?> clazz, Bundle bundle)
     {
         Intent intent = new Intent(this, clazz);
         if (null != bundle)
@@ -194,7 +240,7 @@ public abstract class BaseActivity extends AppCompatActivity
      * @param clazz
      * @param requestCode
      */
-    protected void redirectForResult(Class<?> clazz, int requestCode)
+    public void redirectForResult(Class<?> clazz, int requestCode)
     {
         Intent intent = new Intent(this, clazz);
         startActivityForResult(intent, requestCode);
@@ -207,7 +253,7 @@ public abstract class BaseActivity extends AppCompatActivity
      * @param requestCode
      * @param bundle
      */
-    protected void redirectForResult(Class<?> clazz, int requestCode, Bundle bundle)
+    public void redirectForResult(Class<?> clazz, int requestCode, Bundle bundle)
     {
         Intent intent = new Intent(this, clazz);
         if (null != bundle)

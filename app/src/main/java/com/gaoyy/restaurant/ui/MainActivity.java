@@ -1,5 +1,6 @@
 package com.gaoyy.restaurant.ui;
 
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -7,7 +8,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,15 +15,14 @@ import android.widget.TextView;
 import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.base.BaseActivity;
 import com.gaoyy.restaurant.utils.CommonUtils;
+import com.gaoyy.restaurant.utils.Constant;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     private DrawerLayout mainDrawerLayout;
     private NavigationView mainNavView;
     private Toolbar mainToolbar;
     private RelativeLayout mainContent;
-    private Button mainDeliveryBtn;
-    private Button mainCheckBtn;
     private View headerView;
 
     private ImageView headerAvatar;
@@ -50,8 +49,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mainNavView = (NavigationView) findViewById(R.id.main_nav_view);
         mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         mainContent = (RelativeLayout) findViewById(R.id.main_content);
-        mainDeliveryBtn = (Button) findViewById(R.id.main_delivery_btn);
-        mainCheckBtn = (Button) findViewById(R.id.main_check_btn);
+
     }
 
     @Override
@@ -74,9 +72,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     {
         super.setListener();
         mainNavView.setNavigationItemSelectedListener(this);
-        mainDeliveryBtn.setOnClickListener(this);
-        mainCheckBtn.setOnClickListener(this);
 
+
+    }
+
+    @Override
+    protected void initFragment(Bundle savedInstanceState, int contentLayoutId, int type)
+    {
+        if(CommonUtils.getUserName(this).equals("admin"))
+        {
+            type = Constant.ADMIN;
+        }
+        else
+        {
+            type = Constant.DRIVER;
+        }
+        super.initFragment(savedInstanceState, R.id.main_layout, type);
     }
 
     @Override
@@ -123,22 +134,4 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-    @Override
-    public void onClick(View view)
-    {
-        int id = view.getId();
-//        Pair<View, String>[] pairs = TransitionHelper.createSafeTransitionParticipants
-//                (MainActivity.this, false, new Pair<>(view, "toolbar"));
-//        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, pairs);
-        switch (id)
-        {
-            case R.id.main_delivery_btn:
-                redirect(DeliveryActivity.class);
-//                redirectWithShareViews(DeliveryActivity.class,options);
-                break;
-            case R.id.main_check_btn:
-                redirect(CheckActivity.class);
-                break;
-        }
-    }
 }

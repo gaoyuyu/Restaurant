@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:theme="@style/Main.Button.Theme"
+        android:padding="10dp">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/driver_all_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:text="@string/all_list"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:transitionName="toolbar"
+            />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/driver_my_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:text="@string/my_list"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:transitionName="toolbar"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
