@@ -1,9 +1,63 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:map="http://schemas.android.com/apk/res-auto"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:id="@+id/map"
-          android:name="com.google.android.gms.maps.SupportMapFragment"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          map:cameraZoom="14"
-          tools:context="com.gaoyy.restaurant.ui.MapsActivity"/>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    >
+
+    <include
+        android:id="@+id/maps_toolbar"
+        layout="@layout/widget_toolbar"
+        />
+
+    <LinearLayout
+        android:id="@+id/map_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:map="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:id="@+id/map"
+                  android:name="com.google.android.gms.maps.SupportMapFragment"
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="1"
+                  map:cameraZoom="13"
+                  tools:context="com.gaoyy.restaurant.ui.MapsActivity"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.20"
+            android:background="@color/white"
+            android:padding="5dp"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/maps_local"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="当前位置：aaa"
+                android:layout_marginBottom="2dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/maps_destination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="终点：aaa"
+                android:textSize="15sp"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

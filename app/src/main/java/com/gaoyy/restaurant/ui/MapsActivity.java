@@ -3,16 +3,26 @@ package com.gaoyy.restaurant.ui;
 import android.Manifest;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.gaoyy.restaurant.R;
+import com.gaoyy.restaurant.base.BaseActivity;
+import com.gaoyy.restaurant.fragment.CustomDialogFragment;
+import com.gaoyy.restaurant.utils.CommonUtils;
 import com.gaoyy.restaurant.utils.Constant;
+import com.gaoyy.restaurant.utils.DialogUtils;
+import com.gaoyy.restaurant.utils.GsonUtils;
+import com.gaoyy.restaurant.utils.OkhttpUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -23,13 +33,25 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
+import okhttp3.Request;
+
+import static com.gaoyy.restaurant.R.id.map;
+
+public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
 {
 
     private GoogleMap mMap;
@@ -39,15 +61,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private Toolbar mapsToolbar;
+
+    private LinearLayout mapLayout;
+
+    private TextView mapsLocal;
+    private TextView mapsDestination;
+
+
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    protected void initContentView()
     {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+    }
+
+
+    @Override
+    protected void assignViews()
+    {
+        super.assignViews();
+        mapsToolbar = (Toolbar) findViewById(R.id.maps_toolbar);
+        mapLayout = (LinearLayout) findViewById(R.id.map_layout);
+        mapsLocal = (TextView) findViewById(R.id.maps_local);
+        mapsDestination = (TextView) findViewById(R.id.maps_destination);
+
+    }
+    @Override
+    protected void initToolbar()
+    {
+        super.initToolbar(mapsToolbar, R.string.real_time_location, true, null);
+    }
+
+    @Override
+    protected void configViews()
+    {
+        super.configViews();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(map);
         mapFragment.getMapAsync(this);
 
 
@@ -62,7 +115,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+    }
 
+    @Override
+    protected void loadData()
+    {
+        super.loadData();
     }
 
 
@@ -70,6 +128,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume()
     {
         super.onResume();
+        super.setStatusBarColor(-1);
+        super.setNavigationBarColor(-1);
         mGoogleApiClient.connect();
     }
 
@@ -129,19 +189,122 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void handleNewLocation(Location location)
     {
         Log.e(Constant.TAG, location.toString());
-        double currentLatitude = location.getLatitude();
-        double currentLongitude = location.getLongitude();
+        final double currentLatitude = location.getLatitude();
+        final double currentLongitude = location.getLongitude();
 
-        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Log.e(Constant.TAG, latLng.toString() + "time===" + df.format(new Date()) + "====" + location.toString());
+        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this);
+        Map<String,String>  params = new HashMap<>();
+        params.put("restaurant","广州世界大观");
+        params.put("customer","广州奥林匹克网球中心");
+        params.put("lat",String.valueOf(currentLatitude));
+        params.put("lng",String.valueOf(currentLongitude));
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_LD_URL, "Map", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
 
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title("Current Location"));
-        MarkerOptions options = new MarkerOptions()
-                .position(latLng)
-                .title("I am here!");
-        mMap.addMarker(options);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                Log.e(Constant.TAG,"eeeeeeeeeeeeee>>>>>>>>>>>>"+e.toString());
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                dialog.dismiss();
+                Log.e(Constant.TAG,">>>>>>>>>>>>"+body);
+
+                if(GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, "网络错误");
+                    return;
+                }
+                JSONObject data = GsonUtils.getDataJsonObj(body);
+
+                try
+                {
+                    JSONObject restaurant = (JSONObject) data.get("restaurant");
+                    String restaurantAddress = restaurant.getString("formatted_address");
+                    JSONObject restaurantCode = (JSONObject) restaurant.get("location");
+                    String restaurantLat = restaurantCode.getString("lat");
+                    String restaurantLng = restaurantCode.getString("lng");
+                    Log.e(Constant.TAG,"restaurantAddress==>"+restaurantAddress);
+                    Log.e(Constant.TAG,"restaurantLat==>"+restaurantLat);
+                    Log.e(Constant.TAG,"restaurantLng==>"+restaurantLng);
+                    JSONObject customer = (JSONObject) data.get("customer");
+                    String customerAddress = customer.getString("formatted_address");
+                    JSONObject customerCode = (JSONObject) customer.get("location");
+                    String customerLat = customerCode.getString("lat");
+                    String customerLng = customerCode.getString("lng");
+                    Log.e(Constant.TAG,"customerAddress==>"+customerAddress);
+                    Log.e(Constant.TAG,"customerLat==>"+customerLat);
+                    Log.e(Constant.TAG,"customerLng==>"+customerLng);
+
+                    String mylocation = data.getString("local");
+
+                    String restaurant2customer = data.getString("restaurant_customer");
+                    String local2restaurant = data.getString("local_restaurant");
+
+                    LatLng res =  new LatLng(Double.parseDouble(restaurantLat),
+                            Double.parseDouble(restaurantLng));
+                    LatLng cus =  new LatLng(Double.parseDouble(customerLat),
+                            Double.parseDouble(customerLng));
+                    LatLng my = new LatLng(currentLatitude, currentLongitude);
+
+                    MarkerOptions resOptions = new MarkerOptions()
+                            .position(res)
+                            .title(restaurantAddress)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    MarkerOptions cusOptions = new MarkerOptions()
+                            .position(cus)
+                            .title(customerAddress)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                    MarkerOptions localOptions = new MarkerOptions()
+                            .position(my)
+                            .title("I am Here")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+
+                    mMap.addMarker(resOptions);
+                    mMap.addMarker(cusOptions);
+                    mMap.addMarker(localOptions);
+
+                    List<LatLng> dir1 = CommonUtils.decodePoly(restaurant2customer);
+                    List<LatLng> dir2 = CommonUtils.decodePoly(local2restaurant);
+                    PolylineOptions lineOptions1 = new PolylineOptions();
+                    lineOptions1.addAll(dir1);
+                    lineOptions1.width(5);
+                    lineOptions1.color(Color.BLUE);
+                    PolylineOptions lineOptions2 = new PolylineOptions();
+                    lineOptions2.addAll(dir2);
+                    lineOptions2.width(5);
+                    lineOptions2.color(Color.DKGRAY);
+                    mMap.addPolyline(lineOptions1);
+                    mMap.addPolyline(lineOptions2);
+                    //定位到第0点经纬度
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(my));
+
+                    mapLayout.setVisibility(View.VISIBLE);
+
+                    mapsLocal.setText("我的位置："+mylocation);
+                    mapsDestination.setText("送餐地址："+customerAddress);
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+//        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Log.e(Constant.TAG, latLng.toString() + "time===" + df.format(new Date()) + "====" + location.toString());
+//
+//        //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title("Current Location"));
+//        MarkerOptions options = new MarkerOptions()
+//                .position(latLng)
+//                .title("I am here!");
+//        mMap.addMarker(options);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     @Override
