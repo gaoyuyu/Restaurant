@@ -30,9 +30,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private TextView headerText;
 
 
-
-
-
     @Override
     protected void initContentView()
     {
@@ -68,7 +65,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         headerView = mainNavView.getHeaderView(0);
         headerAvatar = (ImageView) headerView.findViewById(R.id.header_avatar);
         headerText = (TextView) headerView.findViewById(R.id.header_text);
-        headerText.setText("欢迎您，"+ "["+CommonUtils.getUserRole(this)+"]"+CommonUtils.getUserName(this));
+        headerText.setText("欢迎您，" + "[" + CommonUtils.getUserRole(this) + "]" + CommonUtils.getUserName(this));
 
     }
 
@@ -110,6 +107,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch (id)
+        {
+            case R.id.nav_setting:
+                showToast("Settings");
+                break;
+            case R.id.nav_exit:
+                CommonUtils.userLogout(MainActivity.this);
+                redirectThenKill(LoginActivity.class);
+                break;
+        }
 
 
         mainDrawerLayout.closeDrawer(GravityCompat.START);

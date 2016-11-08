@@ -97,6 +97,7 @@ public class DeliveryActivity extends BaseActivity
                 params.put("price",deliveryPrice.getText().toString());
                 params.put("remark",deliveryRemark.getText().toString());
                 Log.e(Constant.TAG,"params==>"+params.toString());
+                final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(DeliveryActivity.this);
                 OkhttpUtils.postAsync(DeliveryActivity.this, Constant.SUBMIT_ORDER_URL, "submit_order", params, new OkhttpUtils.ResultCallback()
                 {
                     @Override
@@ -108,6 +109,7 @@ public class DeliveryActivity extends BaseActivity
                     @Override
                     public void onSuccess(String body)
                     {
+                        dialog.dismiss();
                         int code = GsonUtils.getResponseCode(body);
                         if (code == Constant.ERROR)
                         {

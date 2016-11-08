@@ -58,7 +58,6 @@ public class OrderListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         itemOrderViewHolder.itemCheckAddress.setText("地址：" + order.getCustomer_address());
         itemOrderViewHolder.itemCheckTime.setText(order.getCreate_time());
 
-
         if(onItemClickListener != null)
         {
             itemOrderViewHolder.itemCheckLayout.setOnClickListener(new BasicOnClickListener(itemOrderViewHolder));

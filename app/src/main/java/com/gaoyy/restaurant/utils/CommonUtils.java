@@ -35,6 +35,14 @@ public class CommonUtils
         return hasLogin;
     }
 
+    public static void userLogout(Context context)
+    {
+        SharedPreferences account = context.getSharedPreferences("account", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = account.edit();
+        editor.clear();
+        editor.apply();
+    }
+
     /**
      * 获取登陆用户名
      *
@@ -60,5 +68,6 @@ public class CommonUtils
         String roleName = account.getString("roleName", "");
         return roleName;
     }
+
 
 }

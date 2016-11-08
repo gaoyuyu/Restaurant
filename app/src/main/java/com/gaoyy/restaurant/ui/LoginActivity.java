@@ -186,7 +186,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener
         editor.putString("username", username);
         editor.putString("roleId", role.getJSONObject(0).getString("id"));
         editor.putString("roleName", role.getJSONObject(0).getString("name"));
-        editor.commit();
+        editor.apply();
     }
 
     private void validate()
