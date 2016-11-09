@@ -60,6 +60,18 @@ public class CommonUtils
         String username = account.getString("username", "");
         return username;
     }
+    /**
+     * 获取登陆用户ID
+     *
+     * @param context
+     * @return
+     */
+    public static String getUserId(Context context)
+    {
+        SharedPreferences account = context.getSharedPreferences("account", Activity.MODE_PRIVATE);
+        String userId = account.getString("id", "");
+        return userId;
+    }
 
     /**
      * 获取用户登录角色
@@ -72,6 +84,17 @@ public class CommonUtils
         SharedPreferences account = context.getSharedPreferences("account", Activity.MODE_PRIVATE);
         String roleName = account.getString("roleName", "");
         return roleName;
+    }
+
+    /**
+     * 判断是否是管理员
+     * @param context
+     * @return
+     */
+    public static boolean isAdmin(Context context)
+    {
+        String username = getUserName(context);
+        return username.equals("admin");
     }
 
 

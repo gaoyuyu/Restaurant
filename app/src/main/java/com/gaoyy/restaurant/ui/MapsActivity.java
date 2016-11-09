@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -69,8 +71,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private TextView mapsDestination;
 
 
-
-
     @Override
     protected void initContentView()
     {
@@ -88,6 +88,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mapsDestination = (TextView) findViewById(R.id.maps_destination);
 
     }
+
     @Override
     protected void initToolbar()
     {
@@ -193,27 +194,27 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         final double currentLongitude = location.getLongitude();
 
         final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this);
-        Map<String,String>  params = new HashMap<>();
-        params.put("restaurant","广州世界大观");
-        params.put("customer","广州奥林匹克网球中心");
-        params.put("lat",String.valueOf(currentLatitude));
-        params.put("lng",String.valueOf(currentLongitude));
+        Map<String, String> params = new HashMap<>();
+        params.put("restaurant", "广州世界大观");
+        params.put("customer", "广州奥林匹克网球中心");
+        params.put("lat", String.valueOf(currentLatitude));
+        params.put("lng", String.valueOf(currentLongitude));
         OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_LD_URL, "Map", params, new OkhttpUtils.ResultCallback()
         {
             @Override
             public void onError(Request request, Exception e)
             {
 
-                Log.e(Constant.TAG,"eeeeeeeeeeeeee>>>>>>>>>>>>"+e.toString());
+                Log.e(Constant.TAG, "eeeeeeeeeeeeee>>>>>>>>>>>>" + e.toString());
             }
 
             @Override
             public void onSuccess(String body)
             {
                 dialog.dismiss();
-                Log.e(Constant.TAG,">>>>>>>>>>>>"+body);
+                Log.e(Constant.TAG, ">>>>>>>>>>>>" + body);
 
-                if(GsonUtils.getResponseCode(body) == Constant.ERROR)
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
                 {
                     showSnackbar(mapsToolbar, "网络错误");
                     return;
@@ -227,26 +228,26 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     JSONObject restaurantCode = (JSONObject) restaurant.get("location");
                     String restaurantLat = restaurantCode.getString("lat");
                     String restaurantLng = restaurantCode.getString("lng");
-                    Log.e(Constant.TAG,"restaurantAddress==>"+restaurantAddress);
-                    Log.e(Constant.TAG,"restaurantLat==>"+restaurantLat);
-                    Log.e(Constant.TAG,"restaurantLng==>"+restaurantLng);
+                    Log.e(Constant.TAG, "restaurantAddress==>" + restaurantAddress);
+                    Log.e(Constant.TAG, "restaurantLat==>" + restaurantLat);
+                    Log.e(Constant.TAG, "restaurantLng==>" + restaurantLng);
                     JSONObject customer = (JSONObject) data.get("customer");
                     String customerAddress = customer.getString("formatted_address");
                     JSONObject customerCode = (JSONObject) customer.get("location");
                     String customerLat = customerCode.getString("lat");
                     String customerLng = customerCode.getString("lng");
-                    Log.e(Constant.TAG,"customerAddress==>"+customerAddress);
-                    Log.e(Constant.TAG,"customerLat==>"+customerLat);
-                    Log.e(Constant.TAG,"customerLng==>"+customerLng);
+                    Log.e(Constant.TAG, "customerAddress==>" + customerAddress);
+                    Log.e(Constant.TAG, "customerLat==>" + customerLat);
+                    Log.e(Constant.TAG, "customerLng==>" + customerLng);
 
                     String mylocation = data.getString("local");
 
                     String restaurant2customer = data.getString("restaurant_customer");
                     String local2restaurant = data.getString("local_restaurant");
 
-                    LatLng res =  new LatLng(Double.parseDouble(restaurantLat),
+                    LatLng res = new LatLng(Double.parseDouble(restaurantLat),
                             Double.parseDouble(restaurantLng));
-                    LatLng cus =  new LatLng(Double.parseDouble(customerLat),
+                    LatLng cus = new LatLng(Double.parseDouble(customerLat),
                             Double.parseDouble(customerLng));
                     LatLng my = new LatLng(currentLatitude, currentLongitude);
 
@@ -284,8 +285,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                     mapLayout.setVisibility(View.VISIBLE);
 
-                    mapsLocal.setText("我的位置："+mylocation);
-                    mapsDestination.setText("送餐地址："+customerAddress);
+                    mapsLocal.setText("我的位置：" + mylocation);
+                    mapsDestination.setText("送餐地址：" + customerAddress);
 
                 }
                 catch (JSONException e)
@@ -381,5 +382,74 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Log.e(Constant.TAG, "onLocationChanged time===" + df.format(new Date()));
         handleNewLocation(location);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.maps_menu, menu);
+        Log.e(Constant.TAG,"=====order status==>"+Integer.valueOf(getIntent().getExtras().getString("order_status")));
+        if(Integer.valueOf(getIntent().getExtras().getString("order_status")) != 0)
+        {
+            String[] status = Constant.status;
+            mapsToolbar.getMenu().findItem(R.id.maps_receiveorder).setTitle(status[Integer.valueOf(getIntent().getExtras().getString("order_status"))]).setEnabled(false);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+        switch (id)
+        {
+            case R.id.maps_receiveorder:
+                if(CommonUtils.isAdmin(MapsActivity.this))
+                {
+                    showSnackbar(mapsToolbar,"超级管理员不允许接单");
+                }
+                else
+                {
+                    receiveOrder();
+                }
+
+                break;
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void receiveOrder()
+    {
+        Map<String, String> params = new HashMap<>();
+        params.put("oid", getIntent().getExtras().getString("oid"));
+        params.put("uid", getIntent().getExtras().getString("uid"));
+        Log.e(Constant.TAG, "rece maps==>" + params);
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.RECEIVE_ORDER_URL, "receive_order", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                Log.e(Constant.TAG, ">>>>>>>>>>>>>" + body);
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, GsonUtils.getResponseInfo(body, "data"));
+                    return;
+                }
+                else
+                {
+                    showSnackbar(mapsToolbar, GsonUtils.getResponseInfo(body, "data"));
+                    mapsToolbar.getMenu().getItem(0).setTitle("正在派送中").setEnabled(false);
+                }
+            }
+        });
     }
 }

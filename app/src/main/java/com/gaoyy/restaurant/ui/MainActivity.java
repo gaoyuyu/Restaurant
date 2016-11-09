@@ -79,7 +79,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void initFragment(Bundle savedInstanceState, int contentLayoutId, int type)
     {
-        if(CommonUtils.getUserName(this).equals("admin"))
+        if(CommonUtils.isAdmin(MainActivity.this))
         {
             type = Constant.ADMIN;
         }

@@ -53,6 +53,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     {
         Order order = data.get(position);
         ItemOrderViewHolder itemOrderViewHolder = (ItemOrderViewHolder) holder;
+//        itemOrderViewHolder.itemCheckPhone.setText("客户电话：" + order.getCustomer_phone());
         itemOrderViewHolder.itemCheckPhone.setText(order.getId()+"===客户电话：" + order.getCustomer_phone());
         itemOrderViewHolder.itemCheckStatus.setText(status[Integer.valueOf(order.getStatus())]);
         itemOrderViewHolder.itemCheckAddress.setText("地址：" + order.getCustomer_address());

@@ -1,5 +1,6 @@
 package com.gaoyy.restaurant.ui;
 
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.adapter.OrderListAdapter;
 import com.gaoyy.restaurant.base.BaseActivity;
 import com.gaoyy.restaurant.bean.Order;
+import com.gaoyy.restaurant.utils.CommonUtils;
 import com.gaoyy.restaurant.utils.Constant;
 import com.gaoyy.restaurant.utils.GsonUtils;
 import com.gaoyy.restaurant.utils.OkhttpUtils;
@@ -134,6 +136,11 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         checkSwipeRefreshLayout.setRefreshing(true);
         Map<String, String> params = new HashMap<>();
         params.put("currentPage", String.valueOf(currentPage));
+        if(getIntent().getExtras() !=null)
+        {
+            params.put("uid", getIntent().getExtras().getString("uid"));
+        }
+        Log.e(Constant.TAG,"==order list=>"+params.toString());
         OkhttpUtils.postAsync(this, Constant.ORDER_LIST_URL, "order_list", params, new OkhttpUtils.ResultCallback()
         {
             @Override
@@ -217,7 +224,15 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         {
             case R.id.item_check_layout:
                 showToast(position+"");
-                redirect(MapsActivity.class);
+
+                Log.e(Constant.TAG,"uid===>"+CommonUtils.getUserId(CheckActivity.this));
+                Log.e(Constant.TAG,"oid===>"+orderList.get(position).getId());
+
+                Bundle bundle = new Bundle();
+                bundle.putString("uid", CommonUtils.getUserId(CheckActivity.this));
+                bundle.putString("oid",orderList.get(position).getId());
+                bundle.putString("order_status",orderList.get(position).getStatus());
+                redirect(MapsActivity.class,bundle);
                 break;
         }
     }
