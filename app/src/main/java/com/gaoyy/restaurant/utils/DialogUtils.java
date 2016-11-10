@@ -24,6 +24,20 @@ public class DialogUtils
         dialog.show(((FragmentActivity) context).getSupportFragmentManager(), "LoadingDialog");
         return dialog;
     }
+    public static CustomDialogFragment showLoadingDialog(Context context,String loadingText)
+    {
+        if (!(context instanceof FragmentActivity)) return null;
+        CustomDialogFragment dialog = new WeakReference<CustomDialogFragment>(new CustomDialogFragment()).get();
+        if (dialog == null) return null;
+        dialog.setType(CustomDialogFragment.DialogType.LOADING_WITH_TEXT);
+        dialog.setLoadingText(loadingText);
+        dialog.setCancelable(true);
+        dialog.show(((FragmentActivity) context).getSupportFragmentManager(), "LoadingDialog");
+        return dialog;
+    }
+
+
+
 
     /**
      * 显示带选项按钮对话框

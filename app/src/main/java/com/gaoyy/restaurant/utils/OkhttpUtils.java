@@ -76,9 +76,9 @@ public class OkhttpUtils
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .cache(cache)
-                .connectTimeout(15, TimeUnit.MILLISECONDS)
-                .writeTimeout(20, TimeUnit.MILLISECONDS)
-                .readTimeout(20, TimeUnit.MILLISECONDS);
+                .connectTimeout(1500000, TimeUnit.MILLISECONDS)
+                .writeTimeout(2000000, TimeUnit.MILLISECONDS)
+                .readTimeout(2000000, TimeUnit.MILLISECONDS);
 
         okHttpClient = getOkHttpClientSingletonInstance();
     }

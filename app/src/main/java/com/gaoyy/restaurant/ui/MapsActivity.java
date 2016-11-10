@@ -3,7 +3,6 @@ package com.gaoyy.restaurant.ui;
 import android.Manifest;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -160,7 +158,132 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     {
         mMap = googleMap;
         configMapUiSettings();
+        //加载饭店和客户Maker
+        loadRestaurantAndCustomerMarker();
+
     }
+
+    public void loadRestaurantAndCustomerMarker()
+    {
+        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this,"加载位置...");
+        Map<String, String> params = new HashMap<>();
+        params.put("restaurant", "广州世界大观");
+        params.put("customer", "广州奥林匹克网球中心");
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GetLatAndLng_By_Address_V2_URL, "get_latlng_v2", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+                dialog.dismiss();
+                Log.e(Constant.TAG, "v2 get latlng===>" +  e.toString());
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                dialog.dismiss();
+                Log.e(Constant.TAG, "v2 get latlng===>" + body);
+
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, "网络错误");
+                    return;
+                }
+                JSONObject data = GsonUtils.getDataJsonObj(body);
+
+
+                try
+                {
+                    JSONObject restaurant = (JSONObject) data.get("restaurant_latlng");
+                    String restaurantAddress = restaurant.getString("formatted_address");
+                    JSONObject restaurantCode = (JSONObject) restaurant.get("location");
+                    String restaurantLat = restaurantCode.getString("lat");
+                    String restaurantLng = restaurantCode.getString("lng");
+                    Log.e(Constant.TAG, "restaurantAddress==>" + restaurantAddress);
+                    Log.e(Constant.TAG, "restaurantLat==>" + restaurantLat);
+                    Log.e(Constant.TAG, "restaurantLng==>" + restaurantLng);
+                    JSONObject customer = (JSONObject) data.get("customer_latlng");
+                    String customerAddress = customer.getString("formatted_address");
+                    JSONObject customerCode = (JSONObject) customer.get("location");
+                    String customerLat = customerCode.getString("lat");
+                    String customerLng = customerCode.getString("lng");
+                    Log.e(Constant.TAG, "customerAddress==>" + customerAddress);
+                    Log.e(Constant.TAG, "customerLat==>" + customerLat);
+                    Log.e(Constant.TAG, "customerLng==>" + customerLng);
+
+
+                    LatLng res = new LatLng(Double.parseDouble(restaurantLat),
+                            Double.parseDouble(restaurantLng));
+                    LatLng cus = new LatLng(Double.parseDouble(customerLat),
+                            Double.parseDouble(customerLng));
+
+                    MarkerOptions resOptions = new MarkerOptions()
+                            .position(res)
+                            .title(restaurantAddress)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    MarkerOptions cusOptions = new MarkerOptions()
+                            .position(cus)
+                            .title(customerAddress)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+
+
+                    mMap.addMarker(resOptions);
+                    mMap.addMarker(cusOptions);
+
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(res));
+
+                    loadOrigin2DestinationPolyline(restaurantAddress,customerAddress,getResources().getColor(R.color.colorAccent));
+
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+
+    public void loadOrigin2DestinationPolyline(String origin,String destination,final int lineColor)
+    {
+        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this,"规划驾车路线...");
+        Map<String, String> params = new HashMap<>();
+        params.put("origin", origin);
+        params.put("destination", destination);
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GetDirectionPolyline_V2_URL, "get_polyline_v2", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+                dialog.dismiss();
+                Log.e(Constant.TAG, "get_polyline_v2===>" + e.toString());
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                dialog.dismiss();
+                Log.e(Constant.TAG, "get_polyline_v2===>" + body);
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, "网络错误");
+                    return;
+                }
+                Log.e(Constant.TAG, "get_polyline_v2==line=>" +GsonUtils.getResponseInfo(body,"data"));
+                String restaurant2customer = GsonUtils.getResponseInfo(body,"data");
+                List<LatLng> line = CommonUtils.decodePoly(restaurant2customer);
+                PolylineOptions lineOptions1 = new PolylineOptions();
+                lineOptions1.addAll(line);
+                lineOptions1.width(8);
+                lineOptions1.geodesic(true);
+                lineOptions1.color(lineColor);
+                mMap.addPolyline(lineOptions1);
+            }
+        });
+    }
+
 
     private void configMapUiSettings()
     {
@@ -193,12 +316,59 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         final double currentLatitude = location.getLatitude();
         final double currentLongitude = location.getLongitude();
 
-        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this);
+        Log.e(Constant.TAG, "handleNewLocation===location===>" + location.toString());
+        LatLng my = new LatLng(currentLatitude, currentLongitude);
+        MarkerOptions localOptions = new MarkerOptions()
+                .position(my)
+                .title("I am Here")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+
+        mMap.addMarker(localOptions);
+
+
+
+//        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this,"定位当前位置...");
         Map<String, String> params = new HashMap<>();
-        params.put("restaurant", "广州世界大观");
-        params.put("customer", "广州奥林匹克网球中心");
         params.put("lat", String.valueOf(currentLatitude));
         params.put("lng", String.valueOf(currentLongitude));
+
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_ReverseGeocodingForLatLng_V2_URL, "reverse_v2", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+//                dialog.dismiss();
+                Log.e(Constant.TAG,"reverse_v2=====>"+e.toString());
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                Log.e(Constant.TAG,"reverse_v2=====>"+body);
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, "网络错误");
+                    return;
+                }
+                String localAddress = GsonUtils.getResponseInfo(body,"data");
+                loadOrigin2DestinationPolyline(localAddress,
+                        "中国广东省广州市天河区广州世界大观 邮政编码: 510735",getResources().getColor(R.color.colorPrimaryDark));
+
+
+
+            }
+        });
+
+
+
+//        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this);
+//        Map<String, String> params = new HashMap<>();
+//        params.put("restaurant", "广州世界大观");
+//        params.put("customer", "广州奥林匹克网球中心");
+//        params.put("lat", String.valueOf(currentLatitude));
+//        params.put("lng", String.valueOf(currentLongitude));
+//        Log.e(Constant.TAG,"====>"+params.toString());
+        /*
         OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_LD_URL, "Map", params, new OkhttpUtils.ResultCallback()
         {
             @Override
@@ -295,7 +465,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 }
 
             }
-        });
+        });*/
 //        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 //        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        Log.e(Constant.TAG, latLng.toString() + "time===" + df.format(new Date()) + "====" + location.toString());
@@ -388,8 +558,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.maps_menu, menu);
-        Log.e(Constant.TAG,"=====order status==>"+Integer.valueOf(getIntent().getExtras().getString("order_status")));
-        if(Integer.valueOf(getIntent().getExtras().getString("order_status")) != 0)
+        Log.e(Constant.TAG, "=====order status==>" + Integer.valueOf(getIntent().getExtras().getString("order_status")));
+        if (Integer.valueOf(getIntent().getExtras().getString("order_status")) != 0)
         {
             String[] status = Constant.status;
             mapsToolbar.getMenu().findItem(R.id.maps_receiveorder).setTitle(status[Integer.valueOf(getIntent().getExtras().getString("order_status"))]).setEnabled(false);
@@ -404,9 +574,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         switch (id)
         {
             case R.id.maps_receiveorder:
-                if(CommonUtils.isAdmin(MapsActivity.this))
+                if (CommonUtils.isAdmin(MapsActivity.this))
                 {
-                    showSnackbar(mapsToolbar,"超级管理员不允许接单");
+                    showSnackbar(mapsToolbar, "超级管理员不允许接单");
                 }
                 else
                 {

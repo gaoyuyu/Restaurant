@@ -8,8 +8,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.gaoyy.restaurant.R;
 
@@ -18,7 +20,7 @@ import java.lang.reflect.Field;
 public class CustomDialogFragment extends DialogFragment implements DialogInterface.OnClickListener
 {
     private DialogType type = DialogType.LOADING;
-    private String title, message, negativeText, positiveText;
+    private String loadingText,title, message, negativeText, positiveText;
     private OnAlertDialogClickListener onAlertDialogClickListener;
 
 
@@ -53,10 +55,14 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
         this.type = type;
     }
 
+    public void setLoadingText(String loadingText)
+    {
+        this.loadingText = loadingText;
+    }
 
     public enum DialogType
     {
-        LOADING, ALERT
+        LOADING, LOADING_WITH_TEXT, ALERT
     }
 
     @Override
@@ -69,6 +75,10 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
         else if (DialogType.ALERT == type)
         {
             return createAlertDialog();
+        }
+        else if (DialogType.LOADING_WITH_TEXT == type)
+        {
+            return createLoadingDialogWithText();
         }
         return null;
     }
@@ -106,6 +116,19 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
     {
         Dialog dialog = getCustomDialog();
         dialog.setContentView(R.layout.dialog_loading);
+        return dialog;
+    }
+
+    /**
+     * 创建带文字loading框
+     * @return
+     */
+    private Dialog createLoadingDialogWithText()
+    {
+        Dialog dialog = getCustomDialog();
+        dialog.setContentView(R.layout.dialog_loading);
+        ((TextView)dialog.findViewById(R.id.loading_text)).setVisibility(View.VISIBLE);
+        ((TextView)dialog.findViewById(R.id.loading_text)).setText(loadingText);
         return dialog;
     }
 

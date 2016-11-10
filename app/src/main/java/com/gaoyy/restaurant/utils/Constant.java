@@ -31,4 +31,12 @@ public class Constant
     public static final String MAP_LD_URL = ROOT + "Map/get2LocationAndDirection";
 
     public static final String RECEIVE_ORDER_URL = ROOT+"Order/receiveOrder";
+
+    public static final String MAP_GetLatAndLng_By_Address_V2_URL = ROOT+"Map/getLatAndLngByAddressV2";
+
+    public static final String MAP_GetDirectionPolyline_V2_URL = ROOT+"Map/getDirectionPolylineV2";
+
+    public static final String MAP_ReverseGeocodingForLatLng_V2_URL = ROOT+"Map/reverseGeocodingForLatLngV2";
+
+
 }
