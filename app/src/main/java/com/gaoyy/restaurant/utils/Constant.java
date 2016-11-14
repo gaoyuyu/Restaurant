@@ -22,21 +22,29 @@ public class Constant
 
     private static final String ROOT = "http://192.168.11.117/easycan/index.php/Api/";
 
+    //登录
     public static final String LOGIN_URL = ROOT + "User/login";
 
+    //提交订单
     public static final String SUBMIT_ORDER_URL = ROOT + "Order/submitOrder";
 
+    //订单列表
     public static final String ORDER_LIST_URL = ROOT + "Order/orderList";
 
+    //弃用
     public static final String MAP_LD_URL = ROOT + "Map/get2LocationAndDirection";
 
-    public static final String RECEIVE_ORDER_URL = ROOT+"Order/receiveOrder";
+    //接单
+    public static final String RECEIVE_ORDER_URL = ROOT + "Order/receiveOrder";
 
-    public static final String MAP_GetLatAndLng_By_Address_V2_URL = ROOT+"Map/getLatAndLngByAddressV2";
+    //根据经纬度获取地址
+    public static final String MAP_GETLATANDLNG_BY_ADDRESS_V2_URL = ROOT + "Map/getLatAndLngByAddressV2";
 
-    public static final String MAP_GetDirectionPolyline_V2_URL = ROOT+"Map/getDirectionPolylineV2";
+    //规划路线
+    public static final String MAP_GETDIRECTIONPOLYLINE_V2_URL = ROOT + "Map/getDirectionPolylineV2";
 
-    public static final String MAP_ReverseGeocodingForLatLng_V2_URL = ROOT+"Map/reverseGeocodingForLatLngV2";
+    //
+    public static final String MAP_REVERSEGEOCODINGFORLATLNG_V2_URL = ROOT + "Map/reverseGeocodingForLatLngV2";
 
 
 }
