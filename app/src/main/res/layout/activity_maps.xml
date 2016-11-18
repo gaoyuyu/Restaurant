@@ -32,31 +32,33 @@
                   tools:context="com.gaoyy.restaurant.ui.MapsActivity"/>
 
         <LinearLayout
+            android:id="@+id/maps_text_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.20"
+            android:layout_weight="0.15"
             android:background="@color/white"
+            android:orientation="horizontal"
             android:padding="5dp"
-            android:orientation="vertical"
+            android:visibility="gone"
             >
+
             <TextView
-                android:id="@+id/maps_local"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="当前位置：aaa"
-                android:layout_marginBottom="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="地址："
                 android:textColor="@color/colorAccent"
                 android:textSize="15sp"
-                android:textStyle="bold"/>
+                />
 
             <TextView
                 android:id="@+id/maps_destination"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="终点：aaa"
-                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="中国广东省广州市天河区广州世界大观 邮政编码: 510735"
                 android:textColor="@color/colorAccent"
-                android:textStyle="bold"/>
+                android:textSize="15sp"
+                android:textStyle="bold"
+                />
         </LinearLayout>
     </LinearLayout>
 

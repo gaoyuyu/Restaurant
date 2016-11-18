@@ -223,8 +223,6 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         switch (id)
         {
             case R.id.item_check_layout:
-                showToast(position+"");
-
                 Log.e(Constant.TAG,"uid===>"+CommonUtils.getUserId(CheckActivity.this));
                 Log.e(Constant.TAG,"oid===>"+orderList.get(position).getId());
 

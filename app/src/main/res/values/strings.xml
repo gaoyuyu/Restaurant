@@ -33,4 +33,5 @@
     <string name="my_list">我的订单</string>
     <string name="real_time_location">实时位置</string>
     <string name="receive_order">接单</string>
+    <string name="confirm_receive">确认送达</string>
 </resources>
