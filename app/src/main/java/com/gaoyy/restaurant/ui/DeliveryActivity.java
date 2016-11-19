@@ -125,7 +125,8 @@ public class DeliveryActivity extends BaseActivity
                                 @Override
                                 public void onButtonClick(DialogInterface dialog, int which)
                                 {
-                                    switch(which) {
+                                    switch (which)
+                                    {
                                         case AlertDialog.BUTTON_NEGATIVE:
                                             dialog.dismiss();
                                             deliveryPhone.setText("");

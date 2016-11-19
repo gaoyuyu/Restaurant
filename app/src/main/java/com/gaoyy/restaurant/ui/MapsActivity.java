@@ -1,6 +1,7 @@
 package com.gaoyy.restaurant.ui;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -490,21 +492,36 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if(CommonUtils.isAdmin(MapsActivity.this))
         {
             getMenuInflater().inflate(R.menu.maps_menu_restaurant, menu);
+            configOrderStatus(R.id.maps_confirmreceive);
         }
         else
         {
             getMenuInflater().inflate(R.menu.maps_menu_driver, menu);
-            if (Integer.valueOf(getIntent().getExtras().getString("order_status")) != 0)
-            {
-                String[] status = Constant.status;
-                mapsToolbar.getMenu().findItem(R.id.maps_receiveorder).setTitle(status[Integer.valueOf(getIntent().getExtras().getString("order_status"))]).setEnabled(false);
-            }
+            configOrderStatus(R.id.maps_receiveorder);
         }
-
-
-
         return super.onCreateOptionsMenu(menu);
     }
+
+    /**
+     * 设置订单状态显示
+     */
+    private void configOrderStatus(int itemId)
+    {
+        if (Integer.valueOf(getIntent().getExtras().getString("order_status")) != 0)
+        {
+            String[] status = Constant.status;
+            mapsToolbar.getMenu().findItem(itemId).setTitle(status[Integer.valueOf(getIntent().getExtras().getString("order_status"))]).setEnabled(false);
+        }
+    }
+
+    /**
+     * 上传订单ID和司机位置信息
+     */
+    private void upLoadLocation()
+    {
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -523,7 +540,29 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 }
                 break;
             case R.id.maps_confirmreceive:
-
+                CustomDialogFragment dialog=  DialogUtils.showAlertDialog(MapsActivity.this,
+                        getResources().getString(R.string.notice),
+                        getResources().getString(R.string.confirm_text),
+                        getResources().getString(R.string.cancel),
+                        getResources().getString(R.string.confirm)
+                );
+                dialog.setOnAlertDialogClickListener(new CustomDialogFragment.OnAlertDialogClickListener()
+                {
+                    @Override
+                    public void onButtonClick(DialogInterface dialog, int which)
+                    {
+                        switch(which) {
+                            case AlertDialog.BUTTON_NEGATIVE:
+                                dialog.dismiss();
+                                break;
+                            case AlertDialog.BUTTON_POSITIVE:
+                                confirmReceive();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
                 break;
 
         }
@@ -572,6 +611,29 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
      */
     private void confirmReceive()
     {
+        Map<String ,String> params = new HashMap<>();
+        params.put("oid", getIntent().getExtras().getString("oid"));
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.ORDER_CONFIRM_RECEIVE_URL, "order_confirm_receive", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, "网络错误");
+                    return;
+                }
+
+                showSnackbar(mapsToolbar,GsonUtils.getResponseInfo(body,"data"));
+                mapsToolbar.getMenu().getItem(0).setTitle("完成").setEnabled(false);
+            }
+        });
 
     }
 }

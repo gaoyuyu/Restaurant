@@ -34,4 +34,8 @@
     <string name="real_time_location">实时位置</string>
     <string name="receive_order">接单</string>
     <string name="confirm_receive">确认送达</string>
+    <string name="notice">注意</string>
+    <string name="confirm_text">请再次确认货物是否送达，否则钱货两空！</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
 </resources>

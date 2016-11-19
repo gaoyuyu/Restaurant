@@ -20,7 +20,7 @@ public class Constant
     public static final int MODE_REFRESH = 101;
     public static final int MODE_LOAD_MORE = 102;
 
-    private static final String ROOT = "http://192.168.11.117/easycan/index.php/Api/";
+    private static final String ROOT = "http://192.168.16.63/easycan/index.php/Api/";
 
     //登录
     public static final String LOGIN_URL = ROOT + "User/login";
@@ -43,8 +43,11 @@ public class Constant
     //规划路线
     public static final String MAP_GETDIRECTIONPOLYLINE_V2_URL = ROOT + "Map/getDirectionPolylineV2";
 
-    //
+    //根据经纬度反编码获取地理位置
     public static final String MAP_REVERSEGEOCODINGFORLATLNG_V2_URL = ROOT + "Map/reverseGeocodingForLatLngV2";
+
+    //确认收货
+    public static final String ORDER_CONFIRM_RECEIVE_URL=ROOT+"Order/finishOrder";
 
 
 }
