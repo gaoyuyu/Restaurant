@@ -74,9 +74,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean isFirstLoadingMarker = true;
     private boolean isFirstLoadingPolyline = true;
 
-    private Map<String,String> markers = null;
+    private Map<String, String> markers = null;
 
     private LinearLayout mapsTextLayout;
+
+    private int orderStatus;
+
+    private Marker myMarker = null;
 
 
     @Override
@@ -106,11 +110,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     protected void configViews()
     {
         super.configViews();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
-
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -125,6 +129,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
         markers = new HashMap<>();
+
+        orderStatus = Integer.valueOf(getIntent().getExtras().getString("order_status"));
     }
 
     @Override
@@ -140,19 +146,27 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         super.onResume();
         super.setStatusBarColor(-1);
         super.setNavigationBarColor(-1);
-        mGoogleApiClient.connect();
+        //饭店端登陆不需要定位服务
+        if (!CommonUtils.isAdmin(MapsActivity.this))
+        {
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
     protected void onPause()
     {
         super.onPause();
-
-        if (mGoogleApiClient.isConnected())
+        //饭店端登陆不需要定位服务
+        if (!CommonUtils.isAdmin(MapsActivity.this))
         {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
+            if (mGoogleApiClient.isConnected())
+            {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+                mGoogleApiClient.disconnect();
+            }
         }
+
     }
 
     /**
@@ -183,7 +197,56 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         //加载饭店和客户Maker
         loadRestaurantAndCustomerMarker();
 
+        ////饭店端登陆不需要定位服务，从服务器上获取某一订单下司机的位置
+        if (CommonUtils.isAdmin(MapsActivity.this))
+        {
+            setDriverLocation();
+        }
+
     }
+
+    /**
+     * 获取司机位置和到饭店的导航
+     */
+    private void setDriverLocation()
+    {
+        Log.e(Constant.TAG, "==========Admin Style===========");
+        Map<String, String> params = new HashMap<>();
+        params.put("oid", getIntent().getExtras().getString("oid"));
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GET_DRIVER_LOCATION_BY_ORDERID, "get_driverlocation_by_orderId", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                if (GsonUtils.getResponseCode(body) == Constant.ERROR)
+                {
+                    showSnackbar(mapsToolbar, GsonUtils.getResponseInfo(body, "data"));
+                }
+                else
+                {
+                    JSONObject data = GsonUtils.getDataJsonObj(body);
+
+                    try
+                    {
+                        String lng = data.getString("longitude");
+                        String lat = data.getString("latitude");
+                        showMyMarkerAndPolyLine(Double.parseDouble(lat), Double.parseDouble(lng));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
 
     /**
      * 加载饭店和客户Maker
@@ -219,60 +282,62 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     showSnackbar(mapsToolbar, "网络错误");
                     return;
                 }
-                JSONObject data = GsonUtils.getDataJsonObj(body);
-
-                try
+                else
                 {
-                    JSONObject restaurant = (JSONObject) data.get("restaurant_latlng");
-                    String restaurantAddress = restaurant.getString("formatted_address");
-                    JSONObject restaurantCode = (JSONObject) restaurant.get("location");
-                    String restaurantLat = restaurantCode.getString("lat");
-                    String restaurantLng = restaurantCode.getString("lng");
-                    Log.e(Constant.TAG, "restaurantAddress==>" + restaurantAddress);
-                    Log.e(Constant.TAG, "restaurantLat==>" + restaurantLat);
-                    Log.e(Constant.TAG, "restaurantLng==>" + restaurantLng);
-                    JSONObject customer = (JSONObject) data.get("customer_latlng");
-                    String customerAddress = customer.getString("formatted_address");
-                    JSONObject customerCode = (JSONObject) customer.get("location");
-                    String customerLat = customerCode.getString("lat");
-                    String customerLng = customerCode.getString("lng");
-                    Log.e(Constant.TAG, "customerAddress==>" + customerAddress);
-                    Log.e(Constant.TAG, "customerLat==>" + customerLat);
-                    Log.e(Constant.TAG, "customerLng==>" + customerLng);
+                    JSONObject data = GsonUtils.getDataJsonObj(body);
+
+                    try
+                    {
+                        JSONObject restaurant = (JSONObject) data.get("restaurant_latlng");
+                        String restaurantAddress = restaurant.getString("formatted_address");
+                        JSONObject restaurantCode = (JSONObject) restaurant.get("location");
+                        String restaurantLat = restaurantCode.getString("lat");
+                        String restaurantLng = restaurantCode.getString("lng");
+                        Log.e(Constant.TAG, "restaurantAddress==>" + restaurantAddress);
+                        Log.e(Constant.TAG, "restaurantLat==>" + restaurantLat);
+                        Log.e(Constant.TAG, "restaurantLng==>" + restaurantLng);
+                        JSONObject customer = (JSONObject) data.get("customer_latlng");
+                        String customerAddress = customer.getString("formatted_address");
+                        JSONObject customerCode = (JSONObject) customer.get("location");
+                        String customerLat = customerCode.getString("lat");
+                        String customerLng = customerCode.getString("lng");
+                        Log.e(Constant.TAG, "customerAddress==>" + customerAddress);
+                        Log.e(Constant.TAG, "customerLat==>" + customerLat);
+                        Log.e(Constant.TAG, "customerLng==>" + customerLng);
 
 
-                    LatLng res = new LatLng(Double.parseDouble(restaurantLat),
-                            Double.parseDouble(restaurantLng));
-                    LatLng cus = new LatLng(Double.parseDouble(customerLat),
-                            Double.parseDouble(customerLng));
+                        LatLng res = new LatLng(Double.parseDouble(restaurantLat),
+                                Double.parseDouble(restaurantLng));
+                        LatLng cus = new LatLng(Double.parseDouble(customerLat),
+                                Double.parseDouble(customerLng));
 
-                    MarkerOptions resOptions = new MarkerOptions()
-                            .position(res)
-                            .title("饭店")
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_restaurant_location));
-                    MarkerOptions cusOptions = new MarkerOptions()
-                            .position(cus)
-                            .title("客人")
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_customer_location));
-
-
-                    mMap.addMarker(resOptions);
-                    mMap.addMarker(cusOptions);
-
-                    markers.put("饭店",restaurantAddress);
-                    markers.put("客人",customerAddress);
-
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(res));
-
-                    loadOrigin2DestinationPolyline(restaurantAddress, customerAddress, getResources().getColor(R.color.colorAccent),6);
+                        MarkerOptions resOptions = new MarkerOptions()
+                                .position(res)
+                                .title("饭店")
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_restaurant_location));
+                        MarkerOptions cusOptions = new MarkerOptions()
+                                .position(cus)
+                                .title("客人")
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_customer_location));
 
 
+                        mMap.addMarker(resOptions);
+                        mMap.addMarker(cusOptions);
+
+                        markers.put("饭店", restaurantAddress);
+                        markers.put("客人", customerAddress);
+
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(res));
+
+                        loadOrigin2DestinationPolyline(restaurantAddress, customerAddress, getResources().getColor(R.color.colorAccent), 6);
+
+
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-
             }
         });
     }
@@ -316,15 +381,18 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     showSnackbar(mapsToolbar, "网络错误");
                     return;
                 }
-                Log.e(Constant.TAG, "get_polyline_v2==line=>" + GsonUtils.getResponseInfo(body, "data"));
-                String restaurant2customer = GsonUtils.getResponseInfo(body, "data");
-                List<LatLng> line = CommonUtils.decodePoly(restaurant2customer);
-                PolylineOptions lineOptions = new PolylineOptions();
-                lineOptions.addAll(line);
-                lineOptions.width(lineWidth);
-                lineOptions.geodesic(true);
-                lineOptions.color(lineColor);
-                mMap.addPolyline(lineOptions);
+                else
+                {
+                    Log.e(Constant.TAG, "get_polyline_v2==line=>" + GsonUtils.getResponseInfo(body, "data"));
+                    String restaurant2customer = GsonUtils.getResponseInfo(body, "data");
+                    List<LatLng> line = CommonUtils.decodePoly(restaurant2customer);
+                    PolylineOptions lineOptions = new PolylineOptions();
+                    lineOptions.addAll(line);
+                    lineOptions.width(lineWidth);
+                    lineOptions.geodesic(true);
+                    lineOptions.color(lineColor);
+                    mMap.addPolyline(lineOptions);
+                }
             }
         });
     }
@@ -365,26 +433,38 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         final double currentLongitude = location.getLongitude();
 
         Log.e(Constant.TAG, "handleNewLocation===location===>" + location.toString());
+        showMyMarkerAndPolyLine(currentLatitude, currentLongitude);
+
+
+    }
+
+    /**
+     * 显示司机位置和到饭店的导航
+     *
+     * @param currentLatitude
+     * @param currentLongitude
+     */
+    private void showMyMarkerAndPolyLine(double currentLatitude, double currentLongitude)
+    {
+        //
+        if (myMarker != null) myMarker.remove();
         LatLng my = new LatLng(currentLatitude, currentLongitude);
         MarkerOptions localOptions = new MarkerOptions()
                 .position(my)
                 .title("I am Here")
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_driver_location));
 
-        mMap.addMarker(localOptions);
+        myMarker = mMap.addMarker(localOptions);
 
 
-//        final CustomDialogFragment dialog = DialogUtils.showLoadingDialog(MapsActivity.this,"定位当前位置...");
         Map<String, String> params = new HashMap<>();
         params.put("lat", String.valueOf(currentLatitude));
         params.put("lng", String.valueOf(currentLongitude));
-
         OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_REVERSEGEOCODINGFORLATLNG_V2_URL, "reverse_v2", params, new OkhttpUtils.ResultCallback()
         {
             @Override
             public void onError(Request request, Exception e)
             {
-//                dialog.dismiss();
                 Log.e(Constant.TAG, "reverse_v2=====>" + e.toString());
             }
 
@@ -397,16 +477,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     showSnackbar(mapsToolbar, "网络错误");
                     return;
                 }
-                String localAddress = GsonUtils.getResponseInfo(body, "data");
-                markers.put("I am Here",localAddress);
-                loadOrigin2DestinationPolyline(localAddress,
-                        "中国广东省广州市天河区广州世界大观 邮政编码: 510735", getResources().getColor(R.color.colorPrimaryDark),10);
-
-
+                else
+                {
+                    String localAddress = GsonUtils.getResponseInfo(body, "data");
+                    markers.put("I am Here", localAddress);
+                    loadOrigin2DestinationPolyline(localAddress,
+                            "中国广东省广州市天河区广州世界大观 邮政编码: 510735", getResources().getColor(R.color.colorPrimaryDark), 10);
+                }
             }
         });
-
-
     }
 
     @Override
@@ -424,13 +503,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             return;
         }
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.e(Constant.TAG, (location == null) + "" + "=======location");
+        if (orderStatus == Constant.DELIVERYING)
+        {
+            Log.e(Constant.TAG, "onConnected upLoadLocation");
+            upLoadLocation(location);
+        }
+        Log.e(Constant.TAG, (location == null) + "" + "====>location");
         if (location == null)
         {
+            //实时更新位置
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         else
         {
+            //实时更新位置
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             handleNewLocation(location);
         }
     }
@@ -482,17 +569,26 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Log.e(Constant.TAG, "onLocationChanged time===" + df.format(new Date()));
+        if (orderStatus == Constant.DELIVERYING)
+        {
+            Log.e(Constant.TAG, "onLocationChanged upLoadLocation");
+            upLoadLocation(location);
+        }
         handleNewLocation(location);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.e(Constant.TAG, "=====order status==>" + Integer.valueOf(getIntent().getExtras().getString("order_status")));
-        if(CommonUtils.isAdmin(MapsActivity.this))
+        Log.e(Constant.TAG, "=====order status==>" + orderStatus);
+        if (CommonUtils.isAdmin(MapsActivity.this))
         {
             getMenuInflater().inflate(R.menu.maps_menu_restaurant, menu);
-            configOrderStatus(R.id.maps_confirmreceive);
+            if (orderStatus == Constant.FINISH)
+            {
+                String[] status = Constant.status;
+                mapsToolbar.getMenu().findItem(R.id.maps_confirmreceive).setTitle(status[orderStatus]).setEnabled(false);
+            }
         }
         else
         {
@@ -507,18 +603,41 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
      */
     private void configOrderStatus(int itemId)
     {
-        if (Integer.valueOf(getIntent().getExtras().getString("order_status")) != 0)
+        if (orderStatus != Constant.WAITING)
         {
             String[] status = Constant.status;
-            mapsToolbar.getMenu().findItem(itemId).setTitle(status[Integer.valueOf(getIntent().getExtras().getString("order_status"))]).setEnabled(false);
+            mapsToolbar.getMenu().findItem(itemId).setTitle(status[orderStatus]).setEnabled(false);
         }
     }
 
     /**
      * 上传订单ID和司机位置信息
      */
-    private void upLoadLocation()
+    private void upLoadLocation(Location location)
     {
+        if (location == null)
+        {
+            Log.e(Constant.TAG, "location为空，定位失败，跳过上传");
+            return;
+        }
+        Map<String, String> params = new HashMap<>();
+        params.put("oid", getIntent().getExtras().getString("oid"));
+        params.put("lat", location.getLatitude() + "");
+        params.put("lng", location.getLongitude() + "");
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_UPLOAD_LOCATION, "upload_location", params, new OkhttpUtils.ResultCallback()
+        {
+            @Override
+            public void onError(Request request, Exception e)
+            {
+
+            }
+
+            @Override
+            public void onSuccess(String body)
+            {
+                Log.e(Constant.TAG, "上传位置信息：" + GsonUtils.getResponseInfo(body, "data"));
+            }
+        });
 
     }
 
@@ -540,7 +659,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 }
                 break;
             case R.id.maps_confirmreceive:
-                CustomDialogFragment dialog=  DialogUtils.showAlertDialog(MapsActivity.this,
+                CustomDialogFragment dialog = DialogUtils.showAlertDialog(MapsActivity.this,
                         getResources().getString(R.string.notice),
                         getResources().getString(R.string.confirm_text),
                         getResources().getString(R.string.cancel),
@@ -551,7 +670,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     @Override
                     public void onButtonClick(DialogInterface dialog, int which)
                     {
-                        switch(which) {
+                        switch (which)
+                        {
                             case AlertDialog.BUTTON_NEGATIVE:
                                 dialog.dismiss();
                                 break;
@@ -601,6 +721,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 {
                     showSnackbar(mapsToolbar, GsonUtils.getResponseInfo(body, "data"));
                     mapsToolbar.getMenu().getItem(0).setTitle("正在派送中").setEnabled(false);
+                    orderStatus = Constant.DELIVERYING;
                 }
             }
         });
@@ -611,7 +732,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
      */
     private void confirmReceive()
     {
-        Map<String ,String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put("oid", getIntent().getExtras().getString("oid"));
         OkhttpUtils.postAsync(MapsActivity.this, Constant.ORDER_CONFIRM_RECEIVE_URL, "order_confirm_receive", params, new OkhttpUtils.ResultCallback()
         {
@@ -629,9 +750,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     showSnackbar(mapsToolbar, "网络错误");
                     return;
                 }
-
-                showSnackbar(mapsToolbar,GsonUtils.getResponseInfo(body,"data"));
-                mapsToolbar.getMenu().getItem(0).setTitle("完成").setEnabled(false);
+                else
+                {
+                    showSnackbar(mapsToolbar, GsonUtils.getResponseInfo(body, "data"));
+                    mapsToolbar.getMenu().getItem(0).setTitle("完成").setEnabled(false);
+                }
             }
         });
 

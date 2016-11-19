@@ -46,8 +46,6 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
     private int pageCount;
 
 
-
-
     @Override
     protected void initContentView()
     {
@@ -118,7 +116,7 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
     protected void loadData()
     {
         super.loadData();
-        load(1,Constant.MODE_REFRESH);
+        load(1, Constant.MODE_REFRESH);
     }
 
     private void configProgressView()
@@ -136,11 +134,11 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         checkSwipeRefreshLayout.setRefreshing(true);
         Map<String, String> params = new HashMap<>();
         params.put("currentPage", String.valueOf(currentPage));
-        if(getIntent().getExtras() !=null)
+        if (getIntent().getExtras() != null)
         {
             params.put("uid", getIntent().getExtras().getString("uid"));
         }
-        Log.e(Constant.TAG,"==order list=>"+params.toString());
+        Log.e(Constant.TAG, "==order list=>" + params.toString());
         OkhttpUtils.postAsync(this, Constant.ORDER_LIST_URL, "order_list", params, new OkhttpUtils.ResultCallback()
         {
             @Override
@@ -159,38 +157,40 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
                     showSnackbar(checkRv, GsonUtils.getResponseInfo(body, "data"));
                     return;
                 }
-
-                Gson gson = new Gson();
-                JSONObject data = GsonUtils.getDataJsonObj(body);
-                try
+                else
                 {
-                    pageCount = data.getInt("pageCount");
-                    Log.e(Constant.TAG, "pageCount===>" + pageCount);
-                    orderList = gson.fromJson(data.get("list").toString(),
-                            new TypeToken<LinkedList<Order>>()
-                            {
-                            }.getType());
-                    Log.e(Constant.TAG, "===>" + orderList.toString());
 
-                    if (mode == Constant.MODE_REFRESH)
+                    Gson gson = new Gson();
+                    JSONObject data = GsonUtils.getDataJsonObj(body);
+                    try
                     {
-                        orderListAdapter.addItem(orderList);
+                        pageCount = data.getInt("pageCount");
+                        Log.e(Constant.TAG, "pageCount===>" + pageCount);
+                        orderList = gson.fromJson(data.get("list").toString(),
+                                new TypeToken<LinkedList<Order>>()
+                                {
+                                }.getType());
+                        Log.e(Constant.TAG, "===>" + orderList.toString());
+
+                        if (mode == Constant.MODE_REFRESH)
+                        {
+                            orderListAdapter.addItem(orderList);
+                        }
+                        if (mode == Constant.MODE_LOAD_MORE)
+                        {
+                            orderListAdapter.addMoreItem(orderList);
+                        }
+                        checkSwipeRefreshLayout.setVisibility(View.VISIBLE);
+                        checkProgresswheel.setVisibility(View.GONE);
+
+                        checkSwipeRefreshLayout.setRefreshing(false);
+
                     }
-                    if (mode == Constant.MODE_LOAD_MORE)
+                    catch (JSONException e)
                     {
-                        orderListAdapter.addMoreItem(orderList);
+                        e.printStackTrace();
                     }
-                    checkSwipeRefreshLayout.setVisibility(View.VISIBLE);
-                    checkProgresswheel.setVisibility(View.GONE);
-
-                    checkSwipeRefreshLayout.setRefreshing(false);
-
                 }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-
             }
         });
     }
@@ -223,14 +223,14 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         switch (id)
         {
             case R.id.item_check_layout:
-                Log.e(Constant.TAG,"uid===>"+CommonUtils.getUserId(CheckActivity.this));
-                Log.e(Constant.TAG,"oid===>"+orderList.get(position).getId());
+                Log.e(Constant.TAG, "uid===>" + CommonUtils.getUserId(CheckActivity.this));
+                Log.e(Constant.TAG, "oid===>" + orderList.get(position).getId());
 
                 Bundle bundle = new Bundle();
                 bundle.putString("uid", CommonUtils.getUserId(CheckActivity.this));
-                bundle.putString("oid",orderList.get(position).getId());
-                bundle.putString("order_status",orderList.get(position).getStatus());
-                redirect(MapsActivity.class,bundle);
+                bundle.putString("oid", orderList.get(position).getId());
+                bundle.putString("order_status", orderList.get(position).getStatus());
+                redirect(MapsActivity.class, bundle);
                 break;
         }
     }

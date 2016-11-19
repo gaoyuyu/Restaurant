@@ -17,6 +17,11 @@ public class Constant
     //0-等待，1-派送中，2-完成
     public static final String[] status = {"等待", "派送中", "完成"};
 
+    public static final int WAITING = 0;
+    public static final int DELIVERYING = 1;
+    public static final int FINISH = 2;
+
+
     public static final int MODE_REFRESH = 101;
     public static final int MODE_LOAD_MORE = 102;
 
@@ -47,7 +52,13 @@ public class Constant
     public static final String MAP_REVERSEGEOCODINGFORLATLNG_V2_URL = ROOT + "Map/reverseGeocodingForLatLngV2";
 
     //确认收货
-    public static final String ORDER_CONFIRM_RECEIVE_URL=ROOT+"Order/finishOrder";
+    public static final String ORDER_CONFIRM_RECEIVE_URL = ROOT + "Order/finishOrder";
+
+    //上传位置信息
+    public static final String MAP_UPLOAD_LOCATION = ROOT + "Map/uploadLocation";
+
+    //获取当前司机位置
+    public static final String MAP_GET_DRIVER_LOCATION_BY_ORDERID = ROOT+"Map/getDriverLocationByOrderId";
 
 
 }

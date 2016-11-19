@@ -148,27 +148,29 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener
                             showSnackbar(loginBtn, GsonUtils.getResponseInfo(body, "data"));
                             return;
                         }
-
-                        JSONObject data = GsonUtils.getDataJsonObj(body);
-                        Gson gson = new Gson();
-                        try
+                        else
                         {
-                            String id = data.getString("id");
-                            String username = data.getString("username");
-                            JSONArray role = (JSONArray) data.get("Role");
-                            Log.e(Constant.TAG, "id==>" + id.toString());
-                            Log.e(Constant.TAG, "username==>" + username.toString());
-                            Log.e(Constant.TAG, "role=id=>" + role.getJSONObject(0).getString("id"));
-                            Log.e(Constant.TAG, "role=name=>" + role.getJSONObject(0).getString("name"));
-                            saveUser(id, username ,role);
-                            redirectThenKill(MainActivity.class);
 
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
+                            JSONObject data = GsonUtils.getDataJsonObj(body);
+                            Gson gson = new Gson();
+                            try
+                            {
+                                String id = data.getString("id");
+                                String username = data.getString("username");
+                                JSONArray role = (JSONArray) data.get("Role");
+                                Log.e(Constant.TAG, "id==>" + id.toString());
+                                Log.e(Constant.TAG, "username==>" + username.toString());
+                                Log.e(Constant.TAG, "role=id=>" + role.getJSONObject(0).getString("id"));
+                                Log.e(Constant.TAG, "role=name=>" + role.getJSONObject(0).getString("name"));
+                                saveUser(id, username, role);
+                                redirectThenKill(MainActivity.class);
 
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
 
                     }
                 });
@@ -176,7 +178,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
-    private void saveUser(String id, String username,JSONArray role) throws JSONException
+    private void saveUser(String id, String username, JSONArray role) throws JSONException
     {
         SharedPreferences account = (LoginActivity.this).getSharedPreferences("account",
                 Activity.MODE_PRIVATE);

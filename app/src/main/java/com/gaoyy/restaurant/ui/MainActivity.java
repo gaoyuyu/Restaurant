@@ -38,7 +38,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void initToolbar()
     {
-        super.initToolbar(mainToolbar, R.string.app_name, false, null);
+        int title = R.string.app_name;
+        if(!CommonUtils.isAdmin(MainActivity.this))
+        {
+            title = R.string.driver;
+        }
+        super.initToolbar(mainToolbar, title, false, null);
     }
 
     @Override

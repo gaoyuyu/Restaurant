@@ -59,6 +59,12 @@
             android:name=".ui.MapsActivity"
             android:label="@string/title_activity_maps">
         </activity>
+
+        <service
+            android:name=".service.UploadLocationService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>
