@@ -25,7 +25,9 @@ public class Constant
     public static final int MODE_REFRESH = 101;
     public static final int MODE_LOAD_MORE = 102;
 
-    private static final String ROOT = "http://192.168.16.63/easycan/index.php/Api/";
+    private static final String IP= "http://192.168.11.117";
+
+    private static final String ROOT = IP+"/easycan/index.php/Api/";
 
     //登录
     public static final String LOGIN_URL = ROOT + "User/login";

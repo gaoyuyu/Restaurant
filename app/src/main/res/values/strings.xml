@@ -28,6 +28,7 @@
     <string name="hint">提示</string>
 
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="empty"></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="all_list">所有订单</string>
     <string name="my_list">我的订单</string>
@@ -39,4 +40,9 @@
     <string name="cancel">取消</string>
     <string name="confirm">确认</string>
     <string name="driver">Driver</string>
+    <string name="order_status_waiting">等待</string>
+    <string name="order_status_deliverying">正在派送中</string>
+    <string name="order_status_finish">已完成</string>
+    <string name="order_search">搜索</string>
+    <string name="order_all_status">全部订单</string>
 </resources>

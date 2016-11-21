@@ -65,6 +65,9 @@
             android:enabled="true"
             android:exported="true">
         </service>
+
+        <activity android:name=".ui.SearchActivity">
+        </activity>
     </application>
 
 </manifest>

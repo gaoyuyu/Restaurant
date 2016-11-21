@@ -13,31 +13,11 @@
         />
 
 
-    <com.pnikosis.materialishprogress.ProgressWheel
-        xmlns:wheel="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/check_progresswheel"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        wheel:matProg_barColor="@color/colorPrimary"
-        wheel:matProg_progressIndeterminate="true"/>
-
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/check_swipeRefreshLayout"
+    <include
+        layout="@layout/common_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/check_toolbar"
-        android:visibility="gone"
-        >
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/check_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="vertical">
-        </android.support.v7.widget.RecyclerView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+        />
 
 </RelativeLayout>

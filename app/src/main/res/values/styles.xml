@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="BaseAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -19,6 +19,9 @@
 
 
     <style name="AppTheme" parent="@style/BaseAppTheme">
+    </style>
+    <style name="AppTheme.Spinner" parent="@style/AppTheme">
+        <item name="android:textColor">@color/text_basic_color</item>
     </style>
 
 
