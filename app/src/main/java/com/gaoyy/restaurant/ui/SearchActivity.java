@@ -1,5 +1,6 @@
 package com.gaoyy.restaurant.ui;
 
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.adapter.OrderListAdapter;
 import com.gaoyy.restaurant.base.BaseActivity;
 import com.gaoyy.restaurant.bean.Order;
+import com.gaoyy.restaurant.utils.CommonUtils;
 import com.gaoyy.restaurant.utils.Constant;
 import com.gaoyy.restaurant.utils.GsonUtils;
 import com.gaoyy.restaurant.utils.OkhttpUtils;
@@ -34,7 +36,7 @@ import java.util.Map;
 
 import okhttp3.Request;
 
-public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener
+public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener, OrderListAdapter.OnItemClickListener
 {
     private Toolbar searchToolbar;
     private Spinner searchSpinner;
@@ -78,7 +80,7 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
         super.assignViews();
         searchToolbar = (Toolbar) findViewById(R.id.search_toolbar);
         searchSpinner = (Spinner) findViewById(R.id.search_spinner);
-        searchEdit = (EditText)findViewById(R.id.search_edit);
+        searchEdit = (EditText) findViewById(R.id.search_edit);
         commonProgresswheel = (ProgressWheel) findViewById(R.id.common_progresswheel);
         commonSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.common_swipeRefreshLayout);
         commonRv = (RecyclerView) findViewById(R.id.common_rv);
@@ -100,6 +102,8 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
         searchSpinner.setAdapter(adapter);
         configProgressView();
 
+
+        commonProgresswheel.setVisibility(View.GONE);
         orderListAdapter = new OrderListAdapter(this, orderList);
         commonRv.setAdapter(orderListAdapter);
         //设置布局
@@ -123,7 +127,7 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
                     else
                     {
                         currentPage = currentPage + 1;
-                        load(currentPage, Constant.MODE_LOAD_MORE,searchSpinner.getSelectedItem().toString(),searchEdit.getText().toString());
+                        load(currentPage, Constant.MODE_LOAD_MORE, searchSpinner.getSelectedItem().toString(), searchEdit.getText().toString());
                     }
                 }
             }
@@ -142,6 +146,7 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
     {
         super.setListener();
         commonSwipeRefreshLayout.setOnRefreshListener(this);
+        orderListAdapter.setOnItemClickListener(this);
     }
 
     private void configProgressView()
@@ -168,7 +173,7 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
         switch (id)
         {
             case R.id.action_search:
-                load(1, Constant.MODE_REFRESH,searchSpinner.getSelectedItem().toString(),searchEdit.getText().toString());
+                load(1, Constant.MODE_REFRESH, searchSpinner.getSelectedItem().toString(), searchEdit.getText().toString());
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -200,13 +205,13 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
         return key;
     }
 
-    public void load(int currentPage, final int mode,String selectCondition,String selectValue)
+    public void load(int currentPage, final int mode, String selectCondition, String selectValue)
     {
         commonSwipeRefreshLayout.setRefreshing(true);
         Map<String, String> params = new HashMap<>();
         params.put("currentPage", String.valueOf(currentPage));
         params.put("orderStatus", String.valueOf(getCurrentOrderStatus()));
-        params.put(getMapingKey(selectCondition),selectValue);
+        params.put(getMapingKey(selectCondition), selectValue);
         if (getIntent().getExtras() != null)
         {
             params.put("uid", getIntent().getExtras().getString("uid"));
@@ -271,6 +276,25 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
     @Override
     public void onRefresh()
     {
-        load(1, Constant.MODE_REFRESH,searchSpinner.getSelectedItem().toString(),searchEdit.getText().toString());
+        load(1, Constant.MODE_REFRESH, searchSpinner.getSelectedItem().toString(), searchEdit.getText().toString());
+    }
+
+    @Override
+    public void onItemClick(View view, int position)
+    {
+        int id = view.getId();
+        switch (id)
+        {
+            case R.id.item_check_layout:
+                Log.e(Constant.TAG, "uid===>" + CommonUtils.getUserId(SearchActivity.this));
+                Log.e(Constant.TAG, "oid===>" + orderList.get(position).getId());
+
+                Bundle bundle = new Bundle();
+                bundle.putString("uid", CommonUtils.getUserId(SearchActivity.this));
+                bundle.putString("oid", orderList.get(position).getId());
+                bundle.putString("order_status", orderList.get(position).getStatus());
+                redirect(MapsActivity.class, bundle);
+                break;
+        }
     }
 }

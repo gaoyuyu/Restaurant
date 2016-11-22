@@ -266,7 +266,17 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
         switch (id)
         {
             case R.id.action_search:
-                redirect(SearchActivity.class);
+                if (getIntent().getExtras() != null)
+                {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("uid", CommonUtils.getUserId(CheckActivity.this));
+                    redirect(SearchActivity.class,bundle);
+                }
+                else
+                {
+                    redirect(SearchActivity.class);
+                }
+
                 break;
             case R.id.action_all_order:
                 setCurrentOrderStatus(-1);
