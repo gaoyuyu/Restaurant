@@ -37,8 +37,6 @@ public class DialogUtils
     }
 
 
-
-
     /**
      * 显示带选项按钮对话框
      * @param context
@@ -56,6 +54,24 @@ public class DialogUtils
         dialog.setNegativeText(negativeText);
         dialog.setPositiveText(positionText);
         dialog.show(((FragmentActivity) context).getSupportFragmentManager(), "AlertDialog");
+        return dialog;
+    }
+    /**
+     * 显示带选项按钮对话框
+     * @param context
+     * @return
+     */
+    public static CustomDialogFragment showManualLocationDialog(Context context,String title,String negativeText,String positionText)
+    {
+        if (!(context instanceof FragmentActivity)) return null;
+        CustomDialogFragment dialog = new WeakReference<CustomDialogFragment>(new CustomDialogFragment()).get();
+        if (dialog == null) return null;
+        dialog.setType(CustomDialogFragment.DialogType.MANUAL_LOCATION);
+        dialog.setCancelable(false);
+        dialog.setTitle(title);
+        dialog.setNegativeText(negativeText);
+        dialog.setPositiveText(positionText);
+        dialog.show(((FragmentActivity) context).getSupportFragmentManager(), "ManualLocationDialog");
         return dialog;
     }
 }

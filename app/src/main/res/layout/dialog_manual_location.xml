@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="@dimen/activity_horizontal_margin">
+
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/dialog_manual_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/manual_location"
+        android:inputType="textEmailAddress"
+        android:text="广州大道中289号"
+        android:textColor="@color/text_basic_color"/>
+
+</LinearLayout>

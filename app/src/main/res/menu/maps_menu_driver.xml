@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/maps_location"
+        android:icon="@drawable/ic_place_white_24dp"
+        android:title="@string/location_manual"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/maps_receiveorder"
         android:title="@string/receive_order"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/maps_confirmreceive"
+        android:title="@string/confirm_receive"
+        app:showAsAction="never"/>
 </menu>

@@ -12,6 +12,9 @@
     <color name="gray_light">#e3e3e3</color>
     <color name="text_basic_color">#333333</color>
     <color name="btn_highlight_color">#22000000</color>
+    <color name="yellow">#ecb53e</color>
+    <color name="colorPrimaryDark150">#96303f9f</color>
+    <color name="colorAccent150">#96009688</color>
 
 
     <!-- indigo-->

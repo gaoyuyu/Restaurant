@@ -45,4 +45,7 @@
     <string name="order_status_finish">已完成</string>
     <string name="order_search">搜索</string>
     <string name="order_all_status">全部订单</string>
+    <string name="location_manual">手动定位</string>
+    <string name="location_failed_prompt">若定位失败，请点击右上角角标进行手动定位。</string>
+    <string name="manual_location">请输入当前位置</string>
 </resources>

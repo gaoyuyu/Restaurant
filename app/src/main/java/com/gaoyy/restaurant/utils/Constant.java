@@ -25,7 +25,7 @@ public class Constant
     public static final int MODE_REFRESH = 101;
     public static final int MODE_LOAD_MORE = 102;
 
-    private static final String IP= "http://192.168.11.117";
+    private static final String IP= "http://192.168.16.183";
 
     private static final String ROOT = IP+"/easycan/index.php/Api/";
 
@@ -61,6 +61,9 @@ public class Constant
 
     //获取当前司机位置
     public static final String MAP_GET_DRIVER_LOCATION_BY_ORDERID = ROOT+"Map/getDriverLocationByOrderId";
+
+    //根据地理位置，手动获取定位经纬度
+    public static final String MAP_GETLATANDLNG_BY_ADDRESS_MANUALLY = ROOT+"Map/getLatAndLngByAddressManually";
 
 
 }

@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 public class CustomDialogFragment extends DialogFragment implements DialogInterface.OnClickListener
 {
     private DialogType type = DialogType.LOADING;
-    private String loadingText,title, message, negativeText, positiveText;
+    private String loadingText, title, message, negativeText, positiveText;
     private OnAlertDialogClickListener onAlertDialogClickListener;
 
 
@@ -62,7 +62,7 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
 
     public enum DialogType
     {
-        LOADING, LOADING_WITH_TEXT, ALERT
+        LOADING, LOADING_WITH_TEXT, ALERT, MANUAL_LOCATION
     }
 
     @Override
@@ -79,6 +79,10 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
         else if (DialogType.LOADING_WITH_TEXT == type)
         {
             return createLoadingDialogWithText();
+        }
+        else if (DialogType.MANUAL_LOCATION == type)
+        {
+            return createManualLocationDialog();
         }
         return null;
     }
@@ -121,14 +125,15 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
 
     /**
      * 创建带文字loading框
+     *
      * @return
      */
     private Dialog createLoadingDialogWithText()
     {
         Dialog dialog = getCustomDialog();
         dialog.setContentView(R.layout.dialog_loading);
-        ((TextView)dialog.findViewById(R.id.loading_text)).setVisibility(View.VISIBLE);
-        ((TextView)dialog.findViewById(R.id.loading_text)).setText(loadingText);
+        ((TextView) dialog.findViewById(R.id.loading_text)).setVisibility(View.VISIBLE);
+        ((TextView) dialog.findViewById(R.id.loading_text)).setText(loadingText);
         return dialog;
     }
 
@@ -137,6 +142,16 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(title)
                 .setMessage(message)
+                .setNegativeButton(negativeText, this)
+                .setPositiveButton(positiveText, this);
+        return builder.create();
+    }
+
+    private Dialog createManualLocationDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(title)
+                .setView(R.layout.dialog_manual_location)
                 .setNegativeButton(negativeText, this)
                 .setPositiveButton(positiveText, this);
         return builder.create();
@@ -158,8 +173,9 @@ public class CustomDialogFragment extends DialogFragment implements DialogInterf
     @Override
     public void onClick(DialogInterface dialog, int which)
     {
-        if(onAlertDialogClickListener == null) throw new NullPointerException("onAlertDialogClickListener is null");
-        onAlertDialogClickListener.onButtonClick(dialog,which);
+        if (onAlertDialogClickListener == null)
+            throw new NullPointerException("onAlertDialogClickListener is null");
+        onAlertDialogClickListener.onButtonClick(dialog, which);
     }
 
     public interface OnAlertDialogClickListener
