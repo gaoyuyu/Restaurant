@@ -61,7 +61,7 @@
         </activity>
 
         <service
-            android:name=".service.UploadLocationService"
+            android:name=".service.PollingService"
             android:enabled="true"
             android:exported="true">
         </service>

@@ -152,4 +152,11 @@ public class DeliveryActivity extends BaseActivity
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        OkhttpUtils.cancelTag("submit_order");
+    }
 }

@@ -177,6 +177,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+
+        //取消请求
+//        OkhttpUtils.cancelTag("get_driver_location_by_orderId");
+//        OkhttpUtils.cancelTag("get_latlng_address_v2");
+//        OkhttpUtils.cancelTag("get_polyline_v2");
+//        OkhttpUtils.cancelTag("reverse_v2");
+//        OkhttpUtils.cancelTag("upload_location");
+//        OkhttpUtils.cancelTag("receive_order");
+//        OkhttpUtils.cancelTag("order_confirm_receive");
+        OkhttpUtils.cancelAllCall();
     }
 
     @Override
@@ -218,7 +228,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Log.e(Constant.TAG, "==========setDriverLocationFromServer===========");
         Map<String, String> params = new HashMap<>();
         params.put("oid", getIntent().getExtras().getString("oid"));
-        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GET_DRIVER_LOCATION_BY_ORDERID, "get_driverlocation_by_orderId", params, new OkhttpUtils.ResultCallback()
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GET_DRIVER_LOCATION_BY_ORDERID, "get_driver_location_by_orderId", params, new OkhttpUtils.ResultCallback()
         {
             @Override
             public void onError(Request request, Exception e)
@@ -260,7 +270,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Map<String, String> params = new HashMap<>();
         params.put("restaurant", "广州世界大观");
         params.put("customer", "广州奥林匹克网球中心");
-        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GETLATANDLNG_BY_ADDRESS_V2_URL, "get_latlng_v2", params, new OkhttpUtils.ResultCallback()
+        OkhttpUtils.postAsync(MapsActivity.this, Constant.MAP_GETLATANDLNG_BY_ADDRESS_V2_URL, "get_latlng_address_v2", params, new OkhttpUtils.ResultCallback()
         {
             @Override
             public void onError(Request request, Exception e)
@@ -579,7 +589,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
      */
     private void configReceiveConfirmEnabled()
     {
-        if(orderStatus == Constant.DELIVERYING)
+        if (orderStatus == Constant.DELIVERYING)
         {
             mapsToolbar.getMenu().findItem(R.id.maps_confirmreceive).setEnabled(true);
         }

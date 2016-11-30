@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import com.gaoyy.restaurant.R;
 import com.gaoyy.restaurant.base.BaseActivity;
+import com.gaoyy.restaurant.service.PollingService;
 import com.gaoyy.restaurant.utils.CommonUtils;
 import com.gaoyy.restaurant.utils.Constant;
+import com.gaoyy.restaurant.utils.PollingUtils;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -39,7 +41,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void initToolbar()
     {
         int title = R.string.app_name;
-        if(!CommonUtils.isAdmin(MainActivity.this))
+        if (!CommonUtils.isAdmin(MainActivity.this))
         {
             title = R.string.driver;
         }
@@ -70,6 +72,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         headerText = (TextView) headerView.findViewById(R.id.header_text);
         headerText.setText("欢迎您，" + "[" + CommonUtils.getUserRole(this) + "]" + CommonUtils.getUserName(this));
 
+        CommonUtils.startPollingService(this, 5);
+
     }
 
     @Override
@@ -77,14 +81,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     {
         super.setListener();
         mainNavView.setNavigationItemSelectedListener(this);
-
-
     }
 
     @Override
     protected void initFragment(Bundle savedInstanceState, int contentLayoutId, int type)
     {
-        if(CommonUtils.isAdmin(MainActivity.this))
+        if (CommonUtils.isAdmin(MainActivity.this))
         {
             type = Constant.ADMIN;
         }
@@ -130,6 +132,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_exit:
                 CommonUtils.userLogout(MainActivity.this);
+                PollingUtils.stopPollingService(MainActivity.this, PollingService.class,PollingService.ACTION);
                 redirectThenKill(LoginActivity.class);
                 break;
         }

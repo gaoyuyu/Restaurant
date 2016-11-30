@@ -121,7 +121,6 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
                 {
                     if (currentPage + 1 > pageCount)
                     {
-//                        showSnackbar(recyclerView, ":)到底啦");
                         Log.e(Constant.TAG, "当前页：" + currentPage + ":)到底啦");
                     }
                     else
@@ -296,5 +295,12 @@ public class SearchActivity extends BaseActivity implements SwipeRefreshLayout.O
                 redirect(MapsActivity.class, bundle);
                 break;
         }
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        OkhttpUtils.cancelTag("order_list");
     }
 }

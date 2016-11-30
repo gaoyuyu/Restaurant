@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.gaoyy.restaurant.service.PollingService;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class CommonUtils
         String username = account.getString("username", "");
         return username;
     }
+
     /**
      * 获取登陆用户ID
      *
@@ -88,6 +90,7 @@ public class CommonUtils
 
     /**
      * 判断是否是管理员
+     *
      * @param context
      * @return
      */
@@ -139,5 +142,20 @@ public class CommonUtils
         return poly;
     }
 
+    /**
+     * 非饭店端用户登录时启动轮询Services
+     * @param context
+     * @param seconds
+     */
+    public static void startPollingService(Context context,int seconds)
+    {
+        if (CommonUtils.isUserLogin(context))
+        {
+            if (!CommonUtils.isAdmin(context))
+            {
+                PollingUtils.startPollingService(context, seconds, PollingService.class, PollingService.ACTION);
+            }
+        }
 
+    }
 }

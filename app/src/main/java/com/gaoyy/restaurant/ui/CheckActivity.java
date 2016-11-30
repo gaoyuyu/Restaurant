@@ -225,6 +225,14 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
     }
 
     @Override
+    protected void onPause()
+    {
+        super.onPause();
+        //取消请求
+        OkhttpUtils.cancelTag("order_list");
+    }
+
+    @Override
     public void onRefresh()
     {
         commonSwipeRefreshLayout.setRefreshing(true);
@@ -254,8 +262,6 @@ public class CheckActivity extends BaseActivity implements SwipeRefreshLayout.On
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.check_menu, menu);
-//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-//        searchView.setQueryHint("asd");
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -226,4 +226,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener
             loginPasswordTextinputlayout.setErrorEnabled(false);
         }
     }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        OkhttpUtils.cancelTag("login");
+    }
 }
