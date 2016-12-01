@@ -48,7 +48,7 @@
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/driver.gif)
 
 #### 饭店端下单，司机端接收Notification通知(各种Android机型接受通知存在差异)
-Google Android 6.0
+Google Android 5.0
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/notification.gif)
 MIUI8
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/notification_real.gif)
