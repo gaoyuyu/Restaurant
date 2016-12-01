@@ -17,7 +17,7 @@
 [Update]
 
  - 优化在`实时位置`页面的订单状态显示。
-
+ 
 
 
 ----------
@@ -29,6 +29,10 @@
 
  - 服务端，新增获取订单数量的API，`Order/getOrderCount`
  - 客户端新增轮询服务，监听服务端数据数目变化，有数据更新时会以Notification实时通知客户端。
+
+
+----------
+
 
 ### 2016.12.1
 
@@ -48,10 +52,9 @@
 #### 饭店端下单，司机端接收Notification通知(各种Android机型接受通知存在差异)
 Google Android 6.0
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/notification.gif)
-
 MIUI8
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/notification_real.gif)
-
 #### 饭店端查看订单
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/admin_check_order.gif)
 
+ 
