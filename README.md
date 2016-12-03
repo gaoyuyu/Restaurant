@@ -1,5 +1,7 @@
 # Restaurant
 
+
+----------
 ### 2016.11.29
 
 [Fix]
@@ -39,6 +41,18 @@
  - 服务端，修改`Order/getOrderCount`API，修复清空数据表表中无数据时，轮询服务Crash的问题。
 
 
+----------
+
+
+### 2016.12.3
+[Fix]
+
+ - 修复在`订单管理`订单状态显示不正常的问题。
+
+[Update]
+
+ - 服务端，更新`实时位置`页面，在地图上显示司机，饭店和客人位置，并绘制相应的路线图。
+
 # 演示
 
 #### Admin 饭店端
@@ -48,11 +62,14 @@
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/driver.gif)
 
 #### 饭店端下单，司机端接收Notification通知(各种Android机型接受通知存在差异)
-Google Android 5.0
+Google Android 6.0
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/notification.gif)
 MIUI8
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/notification_real.gif)
 #### 饭店端查看订单
 ![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/admin_check_order.gif)
+
+#### PC端 实时位置
+![images](https://github.com/gaoyuyu/Restaurant/raw/master/captures/server_location.gif)
 
  
